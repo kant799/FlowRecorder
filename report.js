@@ -1,4 +1,4 @@
-// report.js - v1.8 (最终UI同步 & 功能完整版)
+// report.js - v1.8
 
 document.addEventListener('DOMContentLoaded', () => {
     const stepsContainer = document.getElementById('steps-container');
@@ -99,11 +99,25 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
         width: rect.width * dpr,
         height: rect.height * dpr
     };
+    // 计算并应用内边距以确保高亮框不紧贴元素
+    const padding = 5 * dpr;
+    const borderRadius = 8 * dpr;
+    const paddedRect = {
+        x: physicalRect.x - padding,
+        y: physicalRect.y - padding,
+        width: physicalRect.width + padding * 2,
+        height: physicalRect.height + padding * 2,
+    };
+
+    // 绘制高亮边框
     ctx.strokeStyle = '#FF0000';
     ctx.lineWidth = 3 * dpr;
-    ctx.strokeRect(physicalRect.x, physicalRect.y, physicalRect.width, physicalRect.height);
-    const MAGNIFICATION = 2.5;
-    const PADDING = 10 * dpr;
+    ctx.beginPath();
+    ctx.roundRect(paddedRect.x, paddedRect.y, paddedRect.width, paddedRect.height, [borderRadius]);
+    ctx.stroke();
+    // 定义放大镜的参数和尺寸
+    const MAGNIFICATION = 5;
+    const PADDING = 20 * dpr;
     const BORDER_WIDTH = 2 * dpr;
     let magnifiedWidth = physicalRect.width * MAGNIFICATION;
     let magnifiedHeight = physicalRect.height * MAGNIFICATION;
@@ -113,14 +127,16 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
         magnifiedWidth *= ratio;
         magnifiedHeight *= ratio;
     }
+    // 放大镜的最终位置
     const magnifierDest = {
         x: img.width - magnifiedWidth - PADDING - BORDER_WIDTH * 2,
         y: PADDING,
         width: magnifiedWidth,
         height: magnifiedHeight
     };
+    // 放大镜的背景、阴影、边框
     ctx.save();
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
     ctx.shadowBlur = 10 * dpr;
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(magnifierDest.x, magnifierDest.y, magnifierDest.width + BORDER_WIDTH * 2, magnifierDest.height + BORDER_WIDTH * 2);
@@ -129,6 +145,8 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
     ctx.lineWidth = BORDER_WIDTH;
     ctx.strokeRect(magnifierDest.x, magnifierDest.y, magnifierDest.width + BORDER_WIDTH * 2, magnifierDest.height + BORDER_WIDTH * 2);
     ctx.drawImage(img, physicalRect.x, physicalRect.y, physicalRect.width, physicalRect.height, magnifierDest.x + BORDER_WIDTH, magnifierDest.y + BORDER_WIDTH, magnifierDest.width, magnifierDest.height);
+
+    // 高亮框和放大镜的连接线
     const rectCorners = {
         topRight: {
             x: physicalRect.x + physicalRect.width,
