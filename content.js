@@ -35,23 +35,30 @@ function getCssSelector(el) {
  */
 function captureAction(e) {
   const target = e.target;
-  
-  // 忽略对插件自身的交互（如果未来有UI的话）
+
   if (target.id.startsWith('my-recorder-')) return;
-  
+
+  const rect = target.getBoundingClientRect();
+
   const actionData = {
-    type: e.type, // 'click' or 'change'
+    type: e.type,
     selector: getCssSelector(target),
     tagName: target.tagName.toLowerCase(),
-    value: e.type === 'change' ? target.value : undefined, // 仅在change事件时记录value
-    innerText: target.innerText ? target.innerText.trim().slice(0, 200) : '' // 获取文本内容并做截断
+    value: e.type === 'change' ? target.value : undefined,
+    innerText: target.innerText ? target.innerText.trim().slice(0, 200) : '',
+    rect: {
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height
+    },
+    // 【核心新增】捕获设备像素比
+    devicePixelRatio: window.devicePixelRatio || 1
   };
-  
-  // 将捕获到的操作数据发送给background script
+
   chrome.runtime.sendMessage({ type: 'ACTION_RECORDED', data: actionData });
 }
 
-// 监听click和change事件
-// 使用捕获阶段(true)，可以更早地捕获到事件
+// 监听器保持不变
 document.addEventListener('click', captureAction, true);
 document.addEventListener('change', captureAction, true);

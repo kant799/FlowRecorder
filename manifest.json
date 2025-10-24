@@ -17,6 +17,11 @@
   "action": {
     "default_popup": "popup.html"
     // 图标部分已被移除
-  }
-  // 根级别的 icons 声明也已被移除
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["report.html", "report.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
