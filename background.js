@@ -1,112 +1,192 @@
-// background.js - v1.4 (SPA 导航感知版)
+// background.js - v1.6 (最终快照版)
 
 let isRecording = false;
 const STORAGE_KEY = 'recordedSteps';
+let tempScrollStartScreenshot = null;
 
-// =================================================================
-// 【新增】统一的侦察兵注入函数 (避免代码重复)
-// =================================================================
+// 注入脚本的辅助函数 (保持不变)
 function injectContentScript(tabId, url) {
-  // 确认录制正在进行，且URL是我们可以注入的常规网页
-  if (isRecording && url && (url.startsWith('http://') || url.startsWith('https://'))) {
-    console.log(`[注入] 尝试向 Tab ${tabId} (${url}) 注入侦察兵...`);
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ['content.js']
-    }).then(() => {
-      console.log(`[注入] 侦察兵成功部署到 Tab ${tabId}。`);
-    }).catch(err => {
-      console.warn(`[注入] 部署侦察兵到 Tab ${tabId} 失败:`, err.message);
-    });
-  }
+    if (isRecording && url && (url.startsWith('http://') || url.startsWith('https://'))) {
+        chrome.scripting.executeScript({
+            target: { tabId: tabId },
+            files: ['content.js']
+        }).catch(err => {
+            console.warn(`[注入] 部署侦察兵到 Tab ${tabId} 失败:`, err.message);
+        });
+    }
 }
 
-
-// =================================================================
-// 传感器 1: 监听“推倒重建”式导航 (传统MPA)
-// =================================================================
+// 导航监听器 (保持不变)
 const tabUpdateListener = (tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete') {
-    console.log(`[TabUpdate] 检测到页面完全加载: ${tab.url}`);
-    injectContentScript(tabId, tab.url);
-  }
+    if (changeInfo.status === 'complete') {
+        injectContentScript(tabId, tab.url);
+    }
 };
-
-
-// =================================================================
-// 传感器 2: 监听“室内精装修”式导航 (现代SPA)
-// =================================================================
 const webNavigationListener = (details) => {
-  // 过滤掉子框架(iframe)的导航，我们只关心主页面
-  if (details.frameId === 0) {
-    console.log(`[WebNavigation] 检测到SPA导航: ${details.url}`);
-    injectContentScript(details.tabId, details.url);
-  }
+    if (details.frameId === 0) {
+        injectContentScript(details.tabId, details.url);
+    }
 };
 
-
-// =================================================================
-// 消息处理和主逻辑
-// =================================================================
-
+// 消息处理器 (保持不变)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // ... (消息处理 switch 语句保持不变) ...
   switch (message.type) {
-    case 'START_RECORDING': handleStartRecording(); break;
-    case 'PAUSE_RECORDING': isRecording = false; break;
-    case 'END_RECORDING': handleEndRecordingAndShowReport(); break;
-    case 'ACTION_RECORDED': if (isRecording) { handleActionRecorded(message.data, sender.tab); } break;
+    case 'START_RECORDING':
+      handleStartRecording();
+      break;
+    case 'PAUSE_RECORDING':
+      isRecording = false;
+      break;
+    case 'END_RECORDING':
+      handleEndRecordingAndShowReport(); // 调用修改后的函数
+      break;
+    case 'ACTION_IN_PROGRESS':
+      if (isRecording && message.actionType === 'scroll_start') {
+        handleScrollStart(sender.tab);
+      }
+      break;
+    case 'ACTION_RECORDED':
+      if (isRecording) {
+        handleActionRecorded(message.data, sender.tab);
+      }
+      break;
   }
   return true;
 });
 
-async function handleStartRecording() {
-  isRecording = true;
-  await chrome.storage.local.set({ [STORAGE_KEY]: [] });
-  console.log('开始录制... 存储已初始化。');
 
-  // 【修改】同时开启两个传感器
-  chrome.tabs.onUpdated.addListener(tabUpdateListener);
-  chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener);
-  console.log('[传感器] MPA 和 SPA 导航监控已全部开启。');
-
-  // 对当前活动页面进行首次注入
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tab) {
-    injectContentScript(tab.id, tab.url);
-  }
-}
-
+// =================================================================
+// 【核心修改】结束录制并添加最终快照
+// =================================================================
 async function handleEndRecordingAndShowReport() {
-  isRecording = false;
+    console.log('Received: END_RECORDING');
+    if (!isRecording) return; // 防止重复点击
+    isRecording = false;
 
-  // 【修改】同时关闭两个传感器，节省资源
-  chrome.tabs.onUpdated.removeListener(tabUpdateListener);
-  chrome.webNavigation.onHistoryStateUpdated.removeListener(webNavigationListener);
-  console.log('[传感器] 所有导航监控已关闭。');
-  
-  chrome.tabs.create({ url: chrome.runtime.getURL('report.html') });
+    // 1. 关闭所有监控，节省资源
+    chrome.tabs.onUpdated.removeListener(tabUpdateListener);
+    chrome.webNavigation.onHistoryStateUpdated.removeListener(webNavigationListener);
+    console.log('[传感器] 所有导航监控已关闭。');
+
+    // 2. 主动获取当前标签页以进行最后一次截图
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    
+    if (tab) {
+        try {
+            console.log('捕获最终状态截图...');
+            const finalScreenshot = await chrome.tabs.captureVisibleTab(tab.windowId, {
+                format: 'jpeg',
+                quality: 90
+            });
+
+            // 3. 创建一个特殊的“最终状态”步骤对象
+            const finalStep = {
+                action: {
+                    type: 'final_state', // 自定义一个类型
+                    selector: 'N/A'
+                },
+                screenshot: finalScreenshot,
+                timestamp: new Date().toISOString(),
+                url: tab.url,
+                title: tab.title
+            };
+
+            // 4. 将这个最终步骤追加到存储中
+            const result = await chrome.storage.local.get(STORAGE_KEY);
+            const currentSteps = result[STORAGE_KEY] || [];
+            currentSteps.push(finalStep);
+            await chrome.storage.local.set({ [STORAGE_KEY]: currentSteps });
+
+            console.log('✅ 最终状态快照已保存。');
+
+        } catch(error) {
+            console.error('捕获最终状态截图失败:', error);
+        }
+    } else {
+        console.warn('未找到活动标签页来捕获最终快照。');
+    }
+    
+    // 5. 所有操作完成后，打开报告页面
+    console.log('录制结束，正在打开报告页面...');
+    chrome.tabs.create({ url: chrome.runtime.getURL('report.html') });
 }
 
-// handleActionRecorded 函数无需任何改动，它只负责处理到来的数据
-async function handleActionRecorded(actionData, tab) {
-    // ... (代码与上一版本完全相同)
+
+// 其他主要功能函数保持不变
+async function handleStartRecording() {
+    isRecording = true;
+    tempScrollStartScreenshot = null;
+    await chrome.storage.local.set({ [STORAGE_KEY]: [] });
+    console.log('开始录制...');
+    chrome.tabs.onUpdated.addListener(tabUpdateListener);
+    chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener);
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab) {
+        injectContentScript(tab.id, tab.url);
+    }
+}
+
+async function handleScrollStart(tab) {
     if (!tab || !tab.id) return;
     try {
-        const screenshotDataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'jpeg', quality: 90 });
-        const newStep = {
-            action: actionData,
-            screenshot: screenshotDataUrl,
-            timestamp: new Date().toISOString(),
-            url: tab.url,
-            title: tab.title
-        };
+        tempScrollStartScreenshot = await chrome.tabs.captureVisibleTab(tab.windowId, {
+            format: 'jpeg',
+            quality: 90
+        });
+    } catch (error) {
+        console.error('捕获滚动开始截图失败:', error);
+        tempScrollStartScreenshot = null;
+    }
+}
+
+async function handleActionRecorded(actionData, tab) {
+    if (!tab || !tab.id) return;
+    try {
+        const endScreenshot = await chrome.tabs.captureVisibleTab(tab.windowId, {
+            format: 'jpeg',
+            quality: 90
+        });
+
+        let newStep;
+
+        if (actionData.type === 'scroll') {
+            if (tempScrollStartScreenshot) {
+                newStep = {
+                    action: actionData,
+                    screenshot_start: tempScrollStartScreenshot,
+                    screenshot_end: endScreenshot,
+                    timestamp: new Date().toISOString(),
+                    url: tab.url,
+                    title: tab.title
+                };
+                tempScrollStartScreenshot = null;
+            } else {
+                 newStep = {
+                    action: actionData,
+                    screenshot_end: endScreenshot,
+                    timestamp: new Date().toISOString(),
+                    url: tab.url,
+                    title: tab.title
+                };
+            }
+        } else {
+            newStep = {
+                action: actionData,
+                screenshot: endScreenshot,
+                timestamp: new Date().toISOString(),
+                url: tab.url,
+                title: tab.title
+            };
+        }
+
         const result = await chrome.storage.local.get(STORAGE_KEY);
         const currentSteps = result[STORAGE_KEY] || [];
         currentSteps.push(newStep);
         await chrome.storage.local.set({ [STORAGE_KEY]: currentSteps });
-        console.log(`✅ Step ${currentSteps.length} saved. Selector: ${actionData.selector}`);
+
+        console.log(`✅ Step ${currentSteps.length} (${actionData.type}) saved.`);
+
     } catch (error) {
-        console.error('Error during step recording:', error);
+        console.error('记录步骤时出错:', error);
     }
 }
