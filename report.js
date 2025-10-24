@@ -1,5 +1,47 @@
 // report.js - v1.8
 
+
+
+// ★★★ 新增：初始化拖拽排序功能 ★★★
+function initializeDragAndDrop() {
+    const container = document.getElementById('steps-container');
+    if (!container) return;
+
+    // 新增一个函数，用于在排序后更新所有卡片的步骤编号
+    const updateStepNumbers = () => {
+        const cards = container.querySelectorAll('.step-card');
+        cards.forEach((card, index) => {
+            const stepNumberEl = card.querySelector('.step-number');
+            if (stepNumberEl) {
+                stepNumberEl.textContent = index + 1;
+            }
+        });
+    };
+
+    // 使用 SortableJS 初始化
+    new Sortable(container, {
+        animation: 350, // 动画时长，单位毫秒
+        
+        // 自定义CSS类名，用于实现拖拽时的视觉效果
+        ghostClass: 'sortable-ghost',  // 拖拽时占位符的类名
+        dragClass: 'sortable-drag',    // 被拖拽项的类名
+
+        // 当拖拽开始时触发
+        onStart: function () {
+            // 给容器添加一个类名，用于实现“所有卡片缩小”的效果
+            container.classList.add('is-dragging');
+        },
+
+        // 当拖拽结束时触发
+        onEnd: function (evt) {
+            // 移除容器的特殊类名
+            container.classList.remove('is-dragging');
+            // 重新计算并更新所有卡片的步骤编号
+            updateStepNumbers();
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const stepsContainer = document.getElementById('steps-container');
     const STORAGE_KEY = 'recordedSteps';
@@ -88,6 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         updateStepNumbers();
+
+        initializeDragAndDrop();
     });
 });
 

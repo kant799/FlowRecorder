@@ -23,7 +23,7 @@
       padding: 24px;
     }
     .container { 
-      max-width: 80%;
+      max-width: 70%;
       margin: 0 auto; 
     }
     .main-title { 
@@ -133,6 +133,34 @@
     background-color: #cccccc;
     cursor: not-allowed;
 }
+  /* --- ★★★ 新增：拖拽排序动画样式 ★★★ --- */
+
+/* 1. 为卡片添加过渡效果，这是实现“弹性”动画的核心 */
+.step-card {
+    /* ... 您已有的样式 ... */
+    transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55), 
+                box-shadow 0.2s ease-out;
+}
+
+/* 2. 当拖拽开始时，给容器添加is-dragging类，让所有未被拖拽的卡片缩小 */
+#steps-container.is-dragging .step-card:not(.sortable-ghost):not(.sortable-drag) {
+    transform: scale(0.95);
+}
+
+/* 3. 拖拽占位符的样式 (当您拖动一个卡片时，它原来位置的虚线框) */
+.sortable-ghost {
+    opacity: 0.4;
+    background: #f0f8ff;
+    border: 2px dashed #007bff;
+}
+
+/* 4. 正在被拖拽的卡片的样式 */
+.sortable-drag {
+    cursor: grabbing;
+    opacity: 0.9;
+    transform: scale(1.05) rotate(2deg); /* 放大并轻微旋转，使其突出 */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
   </style>
 </head>
 <body>
@@ -143,8 +171,9 @@
     </div>
   </div>
   <button id="download-report-btn" class="download-btn">下载快照</button>
-  <script src="report.js"></script>
   <script src="libs/snapdom.min.js"></script>
+  <script src="libs/sortable.min.js"></script>
+  <script src="report.js"></script>
   <script src="snap-init.js"></script>
 </body>
 </html>
