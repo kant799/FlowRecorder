@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "智能操作录制器",
+  "version": "1.0.0",
+  "description": "记录用户网页操作，自动截图并生成描述。",
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup.html"
+    // 图标部分已被移除
+  }
+  // 根级别的 icons 声明也已被移除
+}
