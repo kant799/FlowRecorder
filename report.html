@@ -4,22 +4,113 @@
   <meta charset="UTF-8">
   <title>操作指南报告</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; margin: 0; padding: 20px; }
-    .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
-    h1 { text-align: center; color: #444; }
-    .step { border-bottom: 1px solid #eee; padding: 20px 0; }
-    .step:last-child { border-bottom: none; }
-    .step-header { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; }
-    .step-details { font-size: 0.9em; color: #666; margin-bottom: 15px; }
-    .step-details code { background-color: #eef; padding: 2px 5px; border-radius: 4px; }
-    canvas { max-width: 100%; border: 1px solid #ccc; }
+    :root {
+      --bg-color: #f4f7f9;
+      --card-bg: #ffffff;
+      --text-color: #333;
+      --subtle-text: #666;
+      --border-color: #e0e0e0;
+      --shadow-color: rgba(0, 0, 0, 0.08);
+      --primary-color: #4A90E2;
+      --danger-color: #e74c3c;
+    }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      line-height: 1.6; 
+      color: var(--text-color); 
+      background-color: var(--bg-color); 
+      margin: 0; 
+      padding: 24px;
+    }
+    .container { 
+      max-width: 900px; 
+      margin: 0 auto; 
+    }
+    .main-title { 
+      text-align: center; 
+      color: var(--text-color); 
+      margin-bottom: 32px;
+      font-size: 2.5em;
+      font-weight: 600;
+    }
+    /* 卡片式设计 */
+    .step-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      margin-bottom: 24px;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease;
+    }
+    .step-card:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background-color: #fafafa;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .step-number {
+      font-size: 1.4em;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    /* 删除按钮 */
+    .delete-btn {
+      background-color: transparent;
+      border: 1px solid var(--danger-color);
+      color: var(--danger-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .delete-btn:hover {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    .card-body {
+      padding: 24px;
+    }
+    .step-details { 
+      font-size: 1em; 
+      color: var(--subtle-text); 
+      margin-bottom: 16px; 
+    }
+    .step-details code, .step-details em { 
+      background-color: #eef; 
+      padding: 3px 6px; 
+      border-radius: 4px;
+      font-family: monospace;
+      color: #555;
+    }
+    .step-details em {
+        font-style: normal;
+        background-color: #fff3cd;
+    }
+    .screenshot-container h4 {
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+    canvas { 
+      max-width: 100%; 
+      border: 1px solid var(--border-color); 
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>智能操作录制器 - 操作指南</h1>
+    <h1 class="main-title">智能操作录制器 - 操作指南</h1>
     <div id="steps-container">
-      <!-- 录制的步骤将由 JavaScript 动态插入到这里 -->
+      <!-- 录制的步骤卡片将由 JavaScript 动态插入到这里 -->
     </div>
   </div>
   <script src="report.js"></script>

@@ -1,34 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  
   <title>智能操作录制器</title>
+  <meta charset="UTF-8">
   <style>
+    :root {
+      --primary-color: #4A90E2;
+      --secondary-color: #F5A623;
+      --danger-color: #D0021B;
+      --light-gray: #f7f7f7;
+      --dark-gray: #555;
+    }
     body {
-      font-family: sans-serif;
-      width: 200px;
-      padding: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      width: 240px;
+      padding: 16px;
+      margin: 0;
+      color: var(--dark-gray);
+    }
+    .header {
       text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     button {
       width: 100%;
-      padding: 10px;
-      margin-top: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: none;
+      border-radius: 6px;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    button:hover {
-      background-color: #f0f0f0;
+    button:active {
+      transform: scale(0.98);
+    }
+    #startButton {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    #startButton:hover {
+      background-color: #357ABD;
+    }
+    #pauseButton {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    #pauseButton:hover {
+      background-color: #D98E15;
+    }
+    #endButton {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    #endButton:hover {
+      background-color: #A90115;
     }
   </style>
 </head>
 <body>
-  <h3>操作控制</h3>
-  <button id="startButton">开始录制</button>
-  <button id="pauseButton">暂停录制</button>
-  <button id="endButton">结束录制</button>
+  <div class="header">
+    <h3>操作控制</h3>
+  </div>
+  <div class="button-group">
+    <button id="startButton">开始录制</button>
+    <button id="pauseButton">暂停录制</button>
+    <button id="endButton">结束录制</button>
+  </div>
   <script src="popup.js"></script>
 </body>
 </html>
