@@ -7,7 +7,13 @@
   "permissions": [
     "storage",
     "activeTab",
-    "scripting"
+    "scripting",
+    "tabs",
+    "webNavigation"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
   ],
 
   "background": {
@@ -16,12 +22,16 @@
 
   "action": {
     "default_popup": "popup.html"
-    // 图标部分已被移除
   },
   "web_accessible_resources": [
     {
-      "resources": ["report.html", "report.js"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "report.html",
+        "report.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }

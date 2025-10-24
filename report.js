@@ -1,4 +1,4 @@
-// report.js - v1.1 (应用 devicePixelRatio 进行精准绘制)
+// report.js - v1.2 (能渲染文本选择和功能键操作)
 
 document.addEventListener('DOMContentLoaded', () => {
   const stepsContainer = document.getElementById('steps-container');
@@ -13,60 +13,87 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     steps.forEach((step, index) => {
-      // ... (创建 stepElement 和 innerHTML 的部分保持不变) ...
       const stepElement = document.createElement('div');
       stepElement.className = 'step';
 
-      let actionDescription = '';
-      if (step.action.type === 'click') {
-        actionDescription = `点击了 <strong>${step.action.tagName}</strong> 元素。`;
-        if (step.action.innerText) {
-            actionDescription += ` (文本: "${step.action.innerText}")`;
-        }
-      } else if (step.action.type === 'change') {
-        actionDescription = `在 <strong>${step.action.tagName}</strong> 输入框中输入了内容。`;
-      }
+      // 【核心修改】使用一个函数来生成更丰富的描述
+      const { description, details } = generateStepDescription(step);
 
       stepElement.innerHTML = `
         <div class="step-header">步骤 ${index + 1}</div>
         <div class="step-details">
-          <p>${actionDescription}</p>
-          <p>CSS选择器: <code>${step.action.selector}</code></p>
+          <p>${description}</p>
+          <p>${details}</p>
         </div>
       `;
 
-
       const canvas = document.createElement('canvas');
+      // ... (Canvas 绘图逻辑与上一版本完全相同)
       const ctx = canvas.getContext('2d');
       const img = new Image();
-
       img.onload = () => {
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.drawImage(img, 0, 0);
-
         const rect = step.action.rect;
-        // 【核心修正】从步骤数据中获取 devicePixelRatio
         const dpr = step.action.devicePixelRatio || 1;
-
         if (rect) {
           ctx.strokeStyle = '#FF0000';
-          ctx.lineWidth = 3 * dpr; // 线宽也应该相应缩放，看起来更协调
-          
-          // 【核心修正】将所有坐标和尺寸都乘以 dpr
-          ctx.strokeRect(
-            rect.x * dpr, 
-            rect.y * dpr, 
-            rect.width * dpr, 
-            rect.height * dpr
-          );
+          ctx.lineWidth = 3 * dpr;
+          ctx.strokeRect(rect.x * dpr, rect.y * dpr, rect.width * dpr, rect.height * dpr);
         }
       };
-
       img.src = step.screenshot;
-      
       stepElement.appendChild(canvas);
+      
       stepsContainer.appendChild(stepElement);
     });
   });
 });
+
+/**
+ * 【新增】根据不同的操作类型，生成对应的文字描述
+ * @param {object} step - 单个步骤对象
+ * @returns {{description: string, details: string}}
+ */
+function generateStepDescription(step) {
+  const action = step.action;
+  let description = '未知操作';
+  let details = `CSS选择器: <code>${action.selector || 'N/A'}</code>`;
+
+  switch (action.type) {
+    case 'click':
+      description = `点击了 <strong>${action.tagName}</strong> 元素。`;
+      if (action.innerText) {
+        description += ` (文本: "<em>${escapeHtml(action.innerText)}</em>")`;
+      }
+      break;
+    case 'change':
+      description = `在 <strong>${action.tagName}</strong> 输入框中输入了内容。`;
+      break;
+    case 'selection':
+      description = `选择了文本: "<strong><em>${escapeHtml(action.selectedText)}</em></strong>"`;
+      break;
+    case 'keypress':
+      description = `在 <strong>${action.tagName}</strong> 元素上按下了 <strong>${action.key}</strong> 键。`;
+      break;
+  }
+  
+  return { description, details };
+}
+
+/**
+ * 【新增】一个简单的HTML转义函数，防止XSS攻击和显示问题
+ * @param {string} text
+ * @returns {string}
+ */
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
