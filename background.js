@@ -1,5 +1,35 @@
 // background.js - v1.6 (最终快照版)
 
+// Service Worker 启动时检查录制状态并设置正确的图标
+chrome.runtime.onStartup.addListener(checkAndSetIcon);
+chrome.runtime.onInstalled.addListener(checkAndSetIcon);
+
+async function checkAndSetIcon() {
+    const data = await chrome.storage.local.get('isRecording'); // 假设您也将 isRecording 状态存入了 storage
+    const recordingState = data.isRecording || false;
+
+    const iconPaths = recordingState ? {
+        "16": "icons/recording-16.png",
+        "32": "icons/recording-32.png",
+        "48": "icons/recording-48.png",
+        "128": "icons/recording-128.png"
+    } : {
+        "16": "icons/default-16.png",
+        "32": "icons/default-32.png",
+        "48": "icons/default-48.png",
+        "128": "icons/default-128.png"
+    };
+
+    chrome.action.setIcon({ path: iconPaths });
+}
+
+// 别忘了在开始/结束录制时，也要更新 storage 中的 isRecording 状态
+// case 'START_RECORDING':
+//   chrome.storage.local.set({ isRecording: true });
+//
+// case 'END_RECORDING':
+//   chrome.storage.local.set({ isRecording: false });
+
 let isRecording = false;
 const STORAGE_KEY = 'recordedSteps';
 let tempScrollStartScreenshot = null;
@@ -32,13 +62,38 @@ const webNavigationListener = (details) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {
     case 'START_RECORDING':
+      chrome.storage.local.set({ isRecording: true });
       handleStartRecording();
+      isRecording = true;
+      chrome.storage.local.set({ recordedSteps: [] });
+
+      // 新增图标切换为录制中状态
+      chrome.action.setIcon({
+        path: {
+          "16": "icons/recording16.png",
+          "48": "icons/recording48.png",
+          "36": "icons/recording36.png",
+          "128": "icons/recording128.png"
+        }
+      });
       break;
     case 'PAUSE_RECORDING':
       isRecording = false;
       break;
     case 'END_RECORDING':
-      handleEndRecordingAndShowReport(); // 调用修改后的函数
+      chrome.storage.local.set({ isRecording: false });
+      handleEndRecordingAndShowReport(); 
+      isRecording = false;
+
+      // 恢复图标为默认状态
+      chrome.action.setIcon({
+        path: {
+          "16": "icons/icon16.png",
+          "48": "icons/icon48.png",
+          "36": "icons/icon36.png",
+          "128": "icons/icon128.png"
+        }
+      });
       break;
     case 'ACTION_IN_PROGRESS':
       if (isRecording && message.actionType === 'scroll_start') {
