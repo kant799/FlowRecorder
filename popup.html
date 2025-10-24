@@ -13,7 +13,7 @@
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      width: 240px;
+      width: 200px;
       padding: 16px;
       margin: 0;
       color: var(--dark-gray);
@@ -22,21 +22,15 @@
       text-align: center;
       margin-bottom: 20px;
     }
-    .header h3 {
-      margin: 0;
-      font-size: 18px;
-      color: #333;
-    }
     .button-group {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 10px;
     }
     button {
       width: 100%;
       padding: 12px;
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 18px;
       cursor: pointer;
       border: none;
       border-radius: 6px;
@@ -50,11 +44,11 @@
       transform: scale(0.98);
     }
     #startButton {
-      background-color: var(--primary-color);
+      background-color: #00a3e3;
       color: white;
     }
     #startButton:hover {
-      background-color: #357ABD;
+      background-color: #007096;
     }
     #pauseButton {
       background-color: var(--secondary-color);
@@ -71,15 +65,24 @@
       background-color: #A90115;
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+        /* 可选：为图标添加一些样式 */
+        .controls i {
+            font-size: 30px; /* 调整图标大小 */
+            margin: 0 10px;  /* 调整图标间距 */
+            cursor: pointer; /* 鼠标悬停时显示为手型 */
+        }
+        .fa-circle-dot {
+            color: rgb(255, 255, 255); /* 将录制图标设置为白色 */
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <h3>操作控制</h3>
-  </div>
   <div class="button-group">
-    <button id="startButton">开始录制</button>
-    <button id="pauseButton">暂停录制</button>
-    <button id="endButton">结束录制</button>
+    <button id="startButton"><i class="fa-solid fa-circle-dot" title="开始录制"></i></button>
+    <button id="pauseButton"><i class="fa-solid fa-pause" title="暂停录制"></i></button>
+    <button id="endButton"><i class="fa-solid fa-stop" title="结束录制"></i></button>
   </div>
   <script src="popup.js"></script>
 </body>

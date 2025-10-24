@@ -181,10 +181,10 @@ function createCanvasWithImage(imgSrc, drawingFn) {
 
 function drawScrollArrow(ctx, img, direction) {
     const dpr = window.devicePixelRatio;
-    const arrowLength = 80 * dpr;
-    const arrowWidth = 40 * dpr;
+    const arrowLength = 200 * dpr;
+    const arrowWidth = 60 * dpr;
     const lineWidth = 8 * dpr;
-    const centerX = img.width / 2;
+    const centerX = img.width * 0.8;
     const centerY = img.height / 2;
     ctx.strokeStyle = '#FF0000';
     ctx.fillStyle = '#FF0000';
@@ -217,6 +217,30 @@ function drawScrollArrow(ctx, img, direction) {
             break;
     }
     ctx.stroke();
+
+    const text = "页面滚动"
+    const fontSize = 24 * dpr;
+    ctx.font = `bold ${fontSize}px sans-serif`;
+    ctx.fillStyle = '#FF0000';
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+    ctx.shadowBlur = 15 * dpr;
+    ctx.shadowOffsetX = 2 * dpr;
+    ctx.shadowOffsetY = 2 * dpr;
+
+    const textPadding = 25 * dpr;
+    const textX = centerX + (arrowWidth / 2) + textPadding;
+    const textY = centerY;
+
+    ctx.fillText(text, textX, textY);
+
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
 }
 
 function generateStepDescription(step, index, totalSteps) {
