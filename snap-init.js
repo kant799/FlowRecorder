@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadBtn.disabled = true;
 
             try {
-                // 使用 snapdom 库生成快照，设置缩放比例为1.5以获得更高清图片
-                const result = await snapdom(containerToCapture, { scale: 1.5 });
+                // 使用 snapdom 库生成快照，设置缩放比例为1以获得更高清图片
+                const result = await snapdom(containerToCapture, { scale: 1 });
                 
                 // 生成带时间戳的文件名
                 const now = new Date();

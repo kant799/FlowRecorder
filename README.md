@@ -1,6 +1,6 @@
-# FlowRecorder
+# OneTwoRecorder
 
-FlowRecorder is a browser extension that allows you to record your interactions on a web page and generate a report of your actions.
+OneTwoRecorder is a browser extension that allows you to record your interactions on a web page and generate a report of your actions.
 
 ## 描述
 
@@ -23,7 +23,7 @@ FlowRecorder is a browser extension that allows you to record your interactions 
 
 ## 使用方法
 
-1.  在 Chrome 浏览器中点击 FlowRecorder 扩展图标。
+1.  在 Chrome 浏览器中点击 OneTwoRecorder 扩展图标。
 2.  在弹出的窗口中，点击“开始录制”按钮。
 3.  在网页上执行您想要录制的操作。
 4.  完成录制后，再次点击扩展图标，然后点击“停止录制”按钮。
