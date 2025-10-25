@@ -52,3 +52,7 @@ OneTwoRecorder is a browser extension that allows you to record your interaction
 **联系我**：邮箱：kant799@163.com
 
 **支持我**：[爱发电](https://afdian.com/a/cyan7)
+
+## 感谢
+[snapDOM](https://github.com/zumerlab/snapdom) 提供的页面截图功能
+[Sortable](https://github.com/SortableJS/Sortable) 提供的列表动态排序组件
