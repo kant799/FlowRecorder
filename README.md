@@ -44,6 +44,10 @@ FlowRecorder is a browser extension that allows you to record your interactions 
 
 欢迎为此项目做出贡献！请随时提交 Pull Request 或开启 Issue。
 
-## 许可证
+## 许可证(License)
 
-该项目目前没有许可证。如果您想使用或分发此代码，请联系仓库所有者。建议添加一个开源许可证，例如 MIT 许可证。
+该项目采用 MIT 许可证。详情请参阅 LICENSE 文件。
+
+## 关于我
+**联系我**：邮箱：kant799@163.com
+**支持我**：[爱发电](https://afdian.com/a/cyan7)
