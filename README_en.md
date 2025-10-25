@@ -12,6 +12,9 @@ This is a browser extension that can record and log web operations. It captures 
 *   **Report Generation:** Generates a detailed report of your actions.
 *   **Snapshot Functionality:** Captures the state of the web page at specific moments.
 
+## Demo Usage
+https://github.com/user-attachments/assets/d6b8d631-a8fc-40ee-aae9-d8ef172211b2
+
 ## Installation
 
 1.  Download or clone this repository from GitHub.
