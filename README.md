@@ -1,6 +1,6 @@
 # OneTwoRecorder
 
-OneTwoRecorder is a browser extension that allows you to record your interactions on a web page and generate a report of your actions.
+简体中文 | [English]()
 
 ## 描述
 
@@ -43,6 +43,10 @@ OneTwoRecorder is a browser extension that allows you to record your interaction
 ## 贡献
 
 欢迎为此项目做出贡献！请随时提交 Pull Request 或开启 Issue。
+
+## TODO
+- [ ] 添加报告中文案实时自定义功能
+- [ ] 添加更多的报告导出方式 `html、markdown`
 
 ## 许可证(License)
 
