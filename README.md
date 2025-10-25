@@ -50,4 +50,5 @@ FlowRecorder is a browser extension that allows you to record your interactions 
 
 ## 关于我
 **联系我**：邮箱：kant799@163.com
+
 **支持我**：[爱发电](https://afdian.com/a/cyan7)
