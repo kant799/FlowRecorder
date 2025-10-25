@@ -4,29 +4,32 @@
   <title>智能操作录制器</title>
   <meta charset="UTF-8">
   <style>
+    /* CSS 变量定义，统一管理颜色主题 */
     :root {
-      --primary-color: #4A90E2;
-      --secondary-color: #F5A623;
-      --danger-color: #D0021B;
-      --light-gray: #f7f7f7;
-      --dark-gray: #555;
+      --primary-color: #4A90E2;    /* 主色调 - 蓝色 */
+      --secondary-color: #F5A623;  /* 次要色调 - 橙色 */
+      --danger-color: #D0021B;     /* 危险操作色调 - 红色 */
+      --light-gray: #f7f7f7;       /* 浅灰色背景 */
+      --dark-gray: #555;           /* 深灰色文字 */
     }
+
+    /* 弹窗主体样式 */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      width: 200px;
+      width: 200px;                /* 固定弹窗宽度 */
       padding: 16px;
       margin: 0;
       color: var(--dark-gray);
     }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+
+    /* 按钮组布局 */
     .button-group {
       display: flex;
       flex-direction: row;
-      gap: 10px;
+      gap: 10px;                   /* 按钮间距 */
     }
+
+    /* 按钮基础样式 */
     button {
       width: 100%;
       padding: 12px;
@@ -38,52 +41,80 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 8px;                    /* 图标与文字间距 */
     }
+
+    /* 按钮按下效果 */
     button:active {
       transform: scale(0.98);
     }
+
+    /* 开始录制按钮样式 */
     #startButton {
       background-color: #00a3e3;
       color: white;
     }
+
     #startButton:hover {
       background-color: #007096;
     }
+
+    /* 暂停录制按钮样式 */
     #pauseButton {
       background-color: var(--secondary-color);
       color: white;
     }
+
     #pauseButton:hover {
       background-color: #D98E15;
     }
+
+    /* 结束录制按钮样式 */
     #endButton {
       background-color: var(--danger-color);
       color: white;
     }
+
     #endButton:hover {
       background-color: #A90115;
     }
+
+    /* 图标样式 */
+    .controls i {
+      font-size: 30px;             /* 图标大小 */
+      margin: 0 10px;              /* 图标间距 */
+      cursor: pointer;             /* 鼠标悬停手型 */
+    }
+
+    /* 录制图标特殊样式 */
+    .fa-circle-dot {
+      color: rgb(255, 255, 255);   /* 录制图标设为白色 */
+    }
   </style>
+
+  <!-- Font Awesome 图标库 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <style>
-        /* 可选：为图标添加一些样式 */
-        .controls i {
-            font-size: 30px; /* 调整图标大小 */
-            margin: 0 10px;  /* 调整图标间距 */
-            cursor: pointer; /* 鼠标悬停时显示为手型 */
-        }
-        .fa-circle-dot {
-            color: rgb(255, 255, 255); /* 将录制图标设置为白色 */
-        }
-    </style>
 </head>
 <body>
+  <!-- 控制按钮组 -->
   <div class="button-group">
-    <button id="startButton"><i class="fa-solid fa-circle-dot" title="开始录制"></i></button>
-    <button id="pauseButton"><i class="fa-solid fa-pause" title="暂停录制"></i></button>
-    <button id="endButton"><i class="fa-solid fa-stop" title="结束录制"></i></button>
+    <!-- 开始录制按钮 -->
+    <button id="startButton">
+      <i class="fa-solid fa-circle-dot" title="开始录制"></i>
+    </button>
+    
+    <!-- 暂停录制按钮 -->
+    <button id="pauseButton">
+      <i class="fa-solid fa-pause" title="暂停录制"></i>
+    </button>
+    
+    <!-- 结束录制按钮 -->
+    <button id="endButton">
+      <i class="fa-solid fa-stop" title="结束录制"></i>
+    </button>
   </div>
+
+  <!-- 弹窗功能脚本 -->
   <script src="popup.js"></script>
 </body>
 </html>

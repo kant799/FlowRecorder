@@ -4,16 +4,19 @@
   <meta charset="UTF-8">
   <title>操作指南报告</title>
   <style>
+    /* CSS 变量定义，便于统一管理和维护样式 */
     :root {
-      --bg-color: #f4f7f9;
-      --card-bg: #ffffff;
-      --text-color: #333;
-      --subtle-text: #666;
-      --border-color: #e0e0e0;
-      --shadow-color: rgba(0, 0, 0, 0.08);
-      --primary-color: #4A90E2;
-      --danger-color: #e74c3c;
+      --bg-color: #f4f7f9;           /* 页面背景色 */
+      --card-bg: #ffffff;            /* 卡片背景色 */
+      --text-color: #333;            /* 主要文字颜色 */
+      --subtle-text: #666;           /* 次要文字颜色 */
+      --border-color: #e0e0e0;       /* 边框颜色 */
+      --shadow-color: rgba(0, 0, 0, 0.08);  /* 阴影颜色 */
+      --primary-color: #4A90E2;      /* 主色调（蓝色） */
+      --danger-color: #e74c3c;       /* 危险操作颜色（红色） */
     }
+
+    /* 页面基础样式 */
     body { 
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
       line-height: 1.6; 
@@ -22,10 +25,15 @@
       margin: 0; 
       padding: 24px;
     }
+
+    /* 主容器样式，限制最大宽度并居中显示 */
     .container { 
-      max-width: 70%;
+      max-width: 65%;
       margin: 0 auto; 
+      /* background-color: var(--bg-color); */
     }
+
+    /* 主标题样式 */
     .main-title { 
       text-align: center; 
       color: var(--text-color); 
@@ -33,18 +41,25 @@
       font-size: 2.5em;
       font-weight: 600;
     }
-    /* 卡片式设计 */
+
+    /* 步骤卡片基础样式 */
     .step-card {
       background-color: var(--card-bg);
       border-radius: 12px;
       box-shadow: 0 4px 12px var(--shadow-color);
       margin-bottom: 24px;
       overflow: hidden;
-      transition: box-shadow 0.3s ease;
+      /* 拖拽排序动画效果 */
+      transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55), 
+                  box-shadow 0.2s ease-out;
     }
+
+    /* 卡片悬停效果 */
     .step-card:hover {
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     }
+
+    /* 卡片头部样式，包含步骤编号和删除按钮 */
     .card-header {
       display: flex;
       justify-content: space-between;
@@ -53,12 +68,15 @@
       background-color: #fafafa;
       border-bottom: 1px solid var(--border-color);
     }
+
+    /* 步骤编号样式 */
     .step-number {
       font-size: 2.4em;
       font-weight: 600;
       color: var(--primary-color);
     }
-    /* 删除按钮 */
+
+    /* 删除按钮样式 */
     .delete-btn {
       background-color: transparent;
       border: 1px solid var(--danger-color);
@@ -70,18 +88,26 @@
       font-weight: 500;
       transition: all 0.2s ease;
     }
+
+    /* 删除按钮悬停效果 */
     .delete-btn:hover {
       background-color: var(--danger-color);
       color: white;
     }
+
+    /* 卡片主体内容区域样式 */
     .card-body {
       padding: 24px;
     }
+
+    /* 步骤详情文字样式 */
     .step-details { 
       font-size: 1.6em; 
       color: var(--subtle-text); 
       margin-bottom: 16px; 
     }
+
+    /* 代码和内联强调文本样式 */
     .step-details code, .step-details em { 
       background-color: #eef; 
       padding: 3px 6px; 
@@ -89,91 +115,117 @@
       font-family: monospace;
       color: #555;
     }
+
     .step-details em {
         font-style: normal;
         background-color: #fff3cd;
     }
+
+    /* 截图容器中的标题样式 */
     .screenshot-container h4 {
       margin-top: 16px;
       margin-bottom: 8px;
       font-weight: 500;
       color: #555;
     }
+
+    /* 截图画布样式 */
     canvas { 
       max-width: 100%; 
       border: 1px solid var(--border-color); 
       border-radius: 8px;
     }
-    /* --- 新增：下载快照按钮样式 --- */
-.download-btn {
-    position: absolute;
-    top: 25px;
-    right: 40px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-}
 
-.download-btn:hover {
-    background-color: #0056b3;
-}
+    /* ===== 下载快照按钮样式 ===== */
+    .download-btn {
+        position: absolute;
+        top: 25px;
+        right: 40px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    }
 
-.download-btn:active {
-    transform: scale(0.98);
-}
+    /* 下载按钮悬停效果 */
+    .download-btn:hover {
+        background-color: #0056b3;
+    }
 
-.download-btn:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-  /* --- ★★★ 新增：拖拽排序动画样式 ★★★ --- */
+    /* 下载按钮按下效果 */
+    .download-btn:active {
+        transform: scale(0.98);
+    }
 
-/* 1. 为卡片添加过渡效果，这是实现“弹性”动画的核心 */
-.step-card {
-    /* ... 您已有的样式 ... */
-    transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55), 
-                box-shadow 0.2s ease-out;
-}
+    /* 下载按钮禁用状态 */
+    .download-btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
 
-/* 2. 当拖拽开始时，给容器添加is-dragging类，让所有未被拖拽的卡片缩小 */
-#steps-container.is-dragging .step-card:not(.sortable-ghost):not(.sortable-drag) {
-    transform: scale(0.95);
-}
+    /* ===== 拖拽排序相关样式 ===== */
 
-/* 3. 拖拽占位符的样式 (当您拖动一个卡片时，它原来位置的虚线框) */
-.sortable-ghost {
-    opacity: 0.4;
-    background: #f0f8ff;
-    border: 2px dashed #007bff;
-}
+    /**
+     * 拖拽时容器状态样式
+     * 当拖拽开始时，给容器添加is-dragging类，让所有未被拖拽的卡片缩小
+     */
+    #steps-container.is-dragging .step-card:not(.sortable-ghost):not(.sortable-drag) {
+        transform: scale(0.85);
+    }
 
-/* 4. 正在被拖拽的卡片的样式 */
-.sortable-drag {
-    cursor: grabbing;
-    opacity: 0.9;
-    transform: scale(1.05) rotate(2deg); /* 放大并轻微旋转，使其突出 */
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-}
+    /**
+     * 拖拽占位符样式
+     * 当拖动一个卡片时，它原来位置的虚线框
+     */
+    .sortable-ghost {
+        opacity: 0.4;
+        background: #f0f8ff;
+        border: 2px dashed #007bff;
+    }
+
+    /**
+     * 正在被拖拽的卡片样式
+     * 放大并轻微旋转，使其在拖拽过程中更加突出
+     */
+    .sortable-drag {
+        cursor: grabbing;
+        opacity: 0.9;
+        transform: scale(1.05) rotate(2deg);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
   </style>
 </head>
 <body>
+  <!-- 页面主容器 -->
   <div class="container">
+    <!-- 页面主标题 -->
     <h1 class="main-title">操作指南</h1>
+    
+    <!-- 步骤容器，JavaScript将动态插入录制的步骤卡片 -->
     <div id="steps-container">
       <!-- 录制的步骤卡片将由 JavaScript 动态插入到这里 -->
     </div>
   </div>
+
+  <!-- 下载快照按钮 -->
   <button id="download-report-btn" class="download-btn">下载快照</button>
+
+  <!-- 外部库引用 -->
+  <!-- snapdom: 用于生成DOM元素快照 -->
   <script src="libs/snapdom.min.js"></script>
+  <!-- SortableJS: 提供拖拽排序功能 -->
   <script src="libs/sortable.min.js"></script>
+  
+  <!-- 项目脚本文件 -->
+  <!-- report.js: 主要功能脚本，负责展示和操作步骤 -->
   <script src="report.js"></script>
+  <!-- snap-init.js: 快照功能初始化脚本 -->
   <script src="snap-init.js"></script>
 </body>
 </html>

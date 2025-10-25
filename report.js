@@ -1,13 +1,18 @@
 // report.js - v1.8
+// 报告页面脚本，负责展示录制的操作步骤并提供交互功能
 
-
-
-// ★★★ 新增：初始化拖拽排序功能 ★★★
+/**
+ * 初始化拖拽排序功能
+ * 使用 SortableJS 库实现步骤卡片的拖拽重新排序
+ */
 function initializeDragAndDrop() {
     const container = document.getElementById('steps-container');
     if (!container) return;
 
-    // 新增一个函数，用于在排序后更新所有卡片的步骤编号
+    /**
+     * 更新所有卡片的步骤编号
+     * 在拖拽排序后重新计算并显示正确的步骤顺序
+     */
     const updateStepNumbers = () => {
         const cards = container.querySelectorAll('.step-card');
         cards.forEach((card, index) => {
@@ -18,7 +23,7 @@ function initializeDragAndDrop() {
         });
     };
 
-    // 使用 SortableJS 初始化
+    // 使用 SortableJS 初始化拖拽功能
     new Sortable(container, {
         animation: 350, // 动画时长，单位毫秒
         
@@ -26,13 +31,18 @@ function initializeDragAndDrop() {
         ghostClass: 'sortable-ghost',  // 拖拽时占位符的类名
         dragClass: 'sortable-drag',    // 被拖拽项的类名
 
-        // 当拖拽开始时触发
+        /**
+         * 拖拽开始时的回调函数
+         */
         onStart: function () {
-            // 给容器添加一个类名，用于实现“所有卡片缩小”的效果
+            // 给容器添加类名，实现"所有卡片缩小"的视觉效果
             container.classList.add('is-dragging');
         },
 
-        // 当拖拽结束时触发
+        /**
+         * 拖拽结束时的回调函数
+         * @param {Object} evt - 拖拽事件对象
+         */
         onEnd: function (evt) {
             // 移除容器的特殊类名
             container.classList.remove('is-dragging');
@@ -42,10 +52,17 @@ function initializeDragAndDrop() {
     });
 }
 
+/**
+ * 页面加载完成后初始化报告内容
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const stepsContainer = document.getElementById('steps-container');
     const STORAGE_KEY = 'recordedSteps';
 
+    /**
+     * 更新所有步骤卡片的编号显示
+     * 特殊处理最终状态卡片，显示"最终页面状态"而非数字编号
+     */
     function updateStepNumbers() {
         const allCards = document.querySelectorAll('.step-card');
         allCards.forEach((card, index) => {
@@ -60,25 +77,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 从本地存储中获取录制的步骤数据
     chrome.storage.local.get(STORAGE_KEY, (result) => {
         const steps = result[STORAGE_KEY];
+        
+        // 检查是否有录制数据
         if (!steps || steps.length === 0) {
             stepsContainer.innerHTML = '<p>没有录制到任何操作步骤。</p>';
             return;
         }
 
+        // 遍历所有步骤数据，创建对应的卡片元素
         steps.forEach((step) => {
             const cardElement = document.createElement('div');
-            // 【关键】确保这个 class 与 CSS 匹配
+            // 设置卡片类名和数据类型属性
             cardElement.className = 'step-card';
             cardElement.dataset.stepType = step.action.type;
 
+            // 生成步骤描述信息
             const {
                 description,
                 details
             } = generateStepDescription(step);
 
-            // 【关键】确保这个 innerHTML 结构与 CSS 匹配
+            // 构建卡片HTML结构
             cardElement.innerHTML = `
                 <div class="card-header">
                   <span class="step-number"></span>
@@ -93,7 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
+            // 处理截图显示
             const screenshotContainer = cardElement.querySelector('.screenshot-container');
+            
+            // 滚动操作特殊处理：显示滚动前后的两张截图
             if (step.action.type === 'scroll' && step.screenshot_start) {
                 const startLabel = document.createElement('h4');
                 startLabel.textContent = '滚动前:';
@@ -109,9 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const endCanvas = createCanvasWithImage(step.screenshot_end);
                 screenshotContainer.appendChild(endCanvas);
             } else {
+                // 其他操作：显示单张截图
                 const screenshot = step.screenshot || step.screenshot_end;
                 if (screenshot) {
                     const canvas = createCanvasWithImage(screenshot, (ctx, img) => {
+                        // 非最终状态的操作需要添加高亮和放大镜效果
                         if (step.action.type !== 'final_state' && step.action.rect) {
                             drawHighlightAndMagnifier(ctx, img, step.action.rect, step.action.devicePixelRatio);
                         }
@@ -120,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // 添加删除按钮事件监听
             const deleteButton = cardElement.querySelector('.delete-btn');
             deleteButton.addEventListener('click', () => {
                 cardElement.remove();
@@ -129,20 +157,35 @@ document.addEventListener('DOMContentLoaded', () => {
             stepsContainer.appendChild(cardElement);
         });
 
+        // 初始化步骤编号显示
         updateStepNumbers();
 
+        // 初始化拖拽排序功能
         initializeDragAndDrop();
     });
 });
 
-// ... (所有绘图和辅助函数 drawHighlightAndMagnifier, createCanvasWithImage, etc. 保持最新版本不变)
+// =================================================================
+// 绘图和辅助函数
+// =================================================================
+
+/**
+ * 在截图上绘制高亮框和放大镜效果
+ * 用于突出显示用户操作的目标元素
+ * @param {CanvasRenderingContext2D} ctx - 画布上下文
+ * @param {HTMLImageElement} img - 截图图像
+ * @param {Object} rect - 元素位置和尺寸信息
+ * @param {number} dpr - 设备像素比
+ */
 function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
+    // 转换为物理像素坐标
     const physicalRect = {
         x: rect.x * dpr,
         y: rect.y * dpr,
         width: rect.width * dpr,
         height: rect.height * dpr
     };
+    
     // 计算并应用内边距以确保高亮框不紧贴元素
     const padding = 5 * dpr;
     const borderRadius = 8 * dpr;
@@ -159,6 +202,7 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
     ctx.beginPath();
     ctx.roundRect(paddedRect.x, paddedRect.y, paddedRect.width, paddedRect.height, [borderRadius]);
     ctx.stroke();
+    
     // 定义放大镜的参数和尺寸
     const MAGNIFICATION = 5;
     const PADDING = 20 * dpr;
@@ -166,11 +210,14 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
     let magnifiedWidth = physicalRect.width * MAGNIFICATION;
     let magnifiedHeight = physicalRect.height * MAGNIFICATION;
     const MAX_MAGNIFIER_SIZE = 250 * dpr;
+    
+    // 限制放大镜最大尺寸
     if (magnifiedWidth > MAX_MAGNIFIER_SIZE || magnifiedHeight > MAX_MAGNIFIER_SIZE) {
         const ratio = Math.min(MAX_MAGNIFIER_SIZE / magnifiedWidth, MAX_MAGNIFIER_SIZE / magnifiedHeight);
         magnifiedWidth *= ratio;
         magnifiedHeight *= ratio;
     }
+    
     // 放大镜的最终位置
     const magnifierDest = {
         x: img.width - magnifiedWidth - PADDING - BORDER_WIDTH * 2,
@@ -178,7 +225,8 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
         width: magnifiedWidth,
         height: magnifiedHeight
     };
-    // 放大镜的背景、阴影、边框
+    
+    // 绘制放大镜背景、阴影、边框
     ctx.save();
     ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
     ctx.shadowBlur = 10 * dpr;
@@ -188,9 +236,13 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
     ctx.strokeStyle = '#333333';
     ctx.lineWidth = BORDER_WIDTH;
     ctx.strokeRect(magnifierDest.x, magnifierDest.y, magnifierDest.width + BORDER_WIDTH * 2, magnifierDest.height + BORDER_WIDTH * 2);
-    ctx.drawImage(img, physicalRect.x, physicalRect.y, physicalRect.width, physicalRect.height, magnifierDest.x + BORDER_WIDTH, magnifierDest.y + BORDER_WIDTH, magnifierDest.width, magnifierDest.height);
+    
+    // 绘制放大后的图像内容
+    ctx.drawImage(img, physicalRect.x, physicalRect.y, physicalRect.width, physicalRect.height, 
+                  magnifierDest.x + BORDER_WIDTH, magnifierDest.y + BORDER_WIDTH, 
+                  magnifiedWidth, magnifiedHeight);
 
-    // 高亮框和放大镜的连接线
+    // 绘制高亮框和放大镜的连接线
     const rectCorners = {
         topRight: {
             x: physicalRect.x + physicalRect.width,
@@ -211,6 +263,7 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
             y: magnifierDest.y + magnifierDest.height + BORDER_WIDTH * 2
         }
     };
+    
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
     ctx.lineWidth = 1 * dpr;
     ctx.setLineDash([5 * dpr, 3 * dpr]);
@@ -225,6 +278,12 @@ function drawHighlightAndMagnifier(ctx, img, rect, dpr = 1) {
     ctx.setLineDash([]);
 }
 
+/**
+ * 创建画布并加载图像
+ * @param {string} imgSrc - 图像源地址
+ * @param {Function} drawingFn - 可选的绘图函数
+ * @returns {HTMLCanvasElement} 包含图像的画布元素
+ */
 function createCanvasWithImage(imgSrc, drawingFn) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -241,6 +300,12 @@ function createCanvasWithImage(imgSrc, drawingFn) {
     return canvas;
 }
 
+/**
+ * 在滚动截图上绘制箭头指示滚动方向
+ * @param {CanvasRenderingContext2D} ctx - 画布上下文
+ * @param {HTMLImageElement} img - 截图图像
+ * @param {string} direction - 滚动方向 ('up' 或 'down')
+ */
 function drawScrollArrow(ctx, img, direction) {
     const dpr = window.devicePixelRatio;
     const arrowLength = 200 * dpr;
@@ -248,11 +313,13 @@ function drawScrollArrow(ctx, img, direction) {
     const lineWidth = 8 * dpr;
     const centerX = img.width * 0.8;
     const centerY = img.height / 2;
+    
     ctx.strokeStyle = '#FF0000';
     ctx.fillStyle = '#FF0000';
     ctx.lineWidth = lineWidth;
     ctx.lineCap = 'round';
     ctx.beginPath();
+    
     let startX, startY, endX, endY;
     switch (direction) {
         case 'down':
@@ -280,15 +347,16 @@ function drawScrollArrow(ctx, img, direction) {
     }
     ctx.stroke();
 
-    const text = "页面滚动"
-    const fontSize = 24 * dpr;
+    // 添加"页面滚动"文字说明
+    const text = "页面滚动";
+    const fontSize = 48 * dpr;
     ctx.font = `bold ${fontSize}px sans-serif`;
     ctx.fillStyle = '#FF0000';
-
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
 
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+    // 添加文字阴影效果
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
     ctx.shadowBlur = 15 * dpr;
     ctx.shadowOffsetX = 2 * dpr;
     ctx.shadowOffsetY = 2 * dpr;
@@ -299,17 +367,25 @@ function drawScrollArrow(ctx, img, direction) {
 
     ctx.fillText(text, textX, textY);
 
+    // 清除阴影效果
     ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 }
 
-function generateStepDescription(step, index, totalSteps) {
+/**
+ * 生成步骤的描述信息
+ * @param {Object} step - 步骤数据对象
+ * @returns {Object} 包含描述和详情的对象
+ */
+function generateStepDescription(step) {
     const action = step.action;
     let description = '未知操作';
     let details = `CSS选择器: <code>${action.selector || 'N/A'}</code>`;
     let isFinal = false;
+    
+    // 根据操作类型生成对应的描述
     switch (action.type) {
         case 'click':
             description = `点击了 <strong>${action.tagName}</strong> 元素。`;
@@ -343,6 +419,11 @@ function generateStepDescription(step, index, totalSteps) {
     };
 }
 
+/**
+ * HTML转义函数，防止XSS攻击
+ * @param {string} text - 需要转义的文本
+ * @returns {string} 转义后的安全文本
+ */
 function escapeHtml(text) {
     const map = {
         '&': '&amp;',
