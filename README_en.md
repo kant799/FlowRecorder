@@ -61,4 +61,5 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Acknowledgments
 [snapDOM](https://github.com/zumerlab/snapdom) for providing the page snapshot functionality.
+
 [Sortable](https://github.com/SortableJS/Sortable) for providing the dynamic list sorting component.
