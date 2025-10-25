@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('抱歉，生成快照时遇到问题，请稍后重试。');
             } finally {
                 // 无论成功与否，都恢复按钮状态
-                downloadBtn.textContent = '下载报告快照';
+                downloadBtn.textContent = '下载快照';
                 downloadBtn.disabled = false;
             }
         });
