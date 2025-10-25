@@ -12,6 +12,9 @@
 *   **报告生成:** 生成一份详细的操作报告。
 *   **快照功能:** 捕捉网页在特定时刻的状态。
 
+## 使用演示
+https://github.com/user-attachments/assets/d6b8d631-a8fc-40ee-aae9-d8ef172211b2
+
 ## 安装
 
 1.  从 GitHub 下载或克隆此仓库。

@@ -18,7 +18,7 @@ function initializeDragAndDrop() {
         cards.forEach((card, index) => {
             const stepNumberEl = card.querySelector('.step-number');
             if (stepNumberEl) {
-                stepNumberEl.textContent = index + 1;
+                stepNumberEl.textContent = `步骤 ${index + 1}`;
             }
         });
     };
