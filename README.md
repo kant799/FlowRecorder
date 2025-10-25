@@ -1,6 +1,6 @@
 # OneTwoRecorder
 
-简体中文 | [English]()
+简体中文 | [English](README_en.md)
 
 ## 描述
 
