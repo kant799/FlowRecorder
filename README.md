@@ -50,6 +50,7 @@ https://github.com/user-attachments/assets/d6b8d631-a8fc-40ee-aae9-d8ef172211b2
 ## TODO
 - [x] 添加报告中文案实时自定义功能
 - [x] 添加更多的报告导出方式 `html`
+- [ ] 报告页面添加目录和对应位置跳转
 - [ ] 更多方案还在考虑中...
 
 ## 许可证(License)

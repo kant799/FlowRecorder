@@ -50,6 +50,7 @@ Contributions to this project are welcome! Please feel free to submit a Pull Req
 ## TODO
 - [x] Add real-time customization of report text
 - [x] Add more report export formats `html`
+- [ ] Add a table of contents to the report page with links to corresponding sections.
 - [ ] More ideas are still being considered…
 
 ## License
