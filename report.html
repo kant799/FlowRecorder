@@ -137,8 +137,8 @@
       border-radius: 8px;
     }
 
-    /* ===== 下载快照按钮样式 ===== */
-    .download-btn {
+    /* ===== 分享按钮菜单样式 ===== */
+    .share-btn {
         position: absolute;
         top: 25px;
         right: 40px;
@@ -154,18 +154,18 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
 
-    /* 下载按钮悬停效果 */
-    .download-btn:hover {
+    /* 分享按钮悬停效果 */
+    .share-btn:hover {
         background-color: #0056b3;
     }
 
-    /* 下载按钮按下效果 */
-    .download-btn:active {
+    /* 分享按钮按下效果 */
+    .share-btn:active {
         transform: scale(0.98);
     }
 
-    /* 下载按钮禁用状态 */
-    .download-btn:disabled {
+    /* 分享按钮禁用状态 */
+    .share-btn:disabled {
         background-color: #cccccc;
         cursor: not-allowed;
     }
@@ -200,6 +200,15 @@
         transform: scale(1.05) rotate(2deg);
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
     }
+    /*内联编辑状态样式 */
+    .step-details p.is-editing {
+      background-color: #fffcee;
+      outline: 2px solid #bdecff;
+      border-radius: 4px;
+      cursor: text;
+      padding: 4px;
+      /*margin: -4px;*/
+    }
   </style>
 </head>
 <body>
@@ -214,8 +223,8 @@
     </div>
   </div>
 
-  <!-- 下载快照按钮 -->
-  <button id="download-report-btn" class="download-btn">下载快照</button>
+  <!-- 分享按钮菜单 -->
+  <button class="share-btn" id="share-btn">导出/分享</button>
 
   <!-- 外部库引用 -->
   <!-- snapdom: 用于生成DOM元素快照 -->
@@ -228,5 +237,9 @@
   <script src="report.js"></script>
   <!-- snap-init.js: 快照功能初始化脚本 -->
   <script src="snap-init.js"></script>
+  <!-- inline-edit.js: 内联编辑功能脚本 -->
+  <script src="inline-edit.js"></script>
+  <!-- export-report.js: 导出功能脚本 -->
+  <script src="export-report.js"></script>
 </body>
 </html>

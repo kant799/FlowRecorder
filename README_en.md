@@ -48,8 +48,9 @@ https://github.com/user-attachments/assets/d6b8d631-a8fc-40ee-aae9-d8ef172211b2
 Contributions to this project are welcome! Please feel free to submit a Pull Request or open an Issue.
 
 ## TODO
-- [ ] Add real-time customization of report text
-- [ ] Add more report export formats `html, markdown`
+- [x] Add real-time customization of report text
+- [x] Add more report export formats `html`
+- [ ] More ideas are still being considered…
 
 ## License
 
